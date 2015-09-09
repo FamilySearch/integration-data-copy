@@ -14,50 +14,54 @@
       <h1>FamilySearch Sandbox Data Copy</h1>
       <p>Copy data from the FamilySearch production tree into the sandbox tree.</p>
     
-      <h3>Sign In</h3>
-      <div class="row">
-        <div class="col-sm-6">
-          <div id="prod-auth" class="panel panel-default auth-panel">
-            <div class="panel-heading">
-              <h3 class="panel-title">PRODUCTION</h3>
-            </div>
-            <div class="panel-body">
-              <div class="no-auth">
-                <button class="btn btn-primary">Sign In</button>
+      <div id="auth" class="section">
+        <h3>Sign In</h3>
+        <div class="row">
+          <div class="col-sm-6">
+            <div id="prod-auth" class="panel panel-default auth-panel">
+              <div class="panel-heading">
+                <h3 class="panel-title">PRODUCTION</h3>
               </div>
-              <div class="auth">
-                <div class="alert alert-info">You are signed in with production.</div>
+              <div class="panel-body">
+                <div class="no-auth">
+                  <button class="btn btn-primary">Sign In</button>
+                </div>
+                <div class="auth">
+                  <div class="alert alert-info">You are signed in with production.</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-sm-6">
-          <div id="sandbox-auth" class="panel panel-default auth-panel">
-            <div class="panel-heading">
-              <h3 class="panel-title">SANDBOX</h3>
-            </div>
-            <div class="panel-body">
-              <div class="no-auth">
-                <button class="btn btn-primary">Sign In</button>
+          <div class="col-sm-6">
+            <div id="sandbox-auth" class="panel panel-default auth-panel">
+              <div class="panel-heading">
+                <h3 class="panel-title">SANDBOX</h3>
               </div>
-              <div class="auth">
-                <div class="alert alert-info">You are signed in with sandbox.</div>
+              <div class="panel-body">
+                <div class="no-auth">
+                  <button class="btn btn-primary">Sign In</button>
+                </div>
+                <div class="auth">
+                  <div class="alert alert-info">You are signed in with sandbox.</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      <div id="start">
+      <div id="start" class="section">
         <h3>Starting Person</h3>
         <p class="help-block">Enter the ID of a person where the copying will start.</p>
         <div class="row">
           <div class="col-sm-3">
-            <div class="input-group">
-              <input type="text" class="form-control" id="startPersonId" placeholder="PPPP-PPP">
-              <span class="input-group-btn">
-                <button id="start-search-btn" class="btn btn-default" type="button">Search</button>
-              </span>
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" class="form-control" id="startPersonId" placeholder="PPPP-PPP">
+                <span class="input-group-btn">
+                  <button id="start-search-btn" class="btn btn-default" type="button">Search</button>
+                </span>
+              </div>
             </div>
           </div>
           <div class="col-sm-9">
@@ -69,6 +73,55 @@
           </div>
         </div>
       </div>
+      
+      <div class="section">
+        <h3>Who else should we copy?</h3>
+        <div class="form-group">
+          <div class="radio">
+            <label>
+              <input type="radio" name="traversal-filter" value="ancestry" checked>
+              <strong>Ancestors</strong> - Only copy direct ancestors.
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="traversal-filter" value="descendancy">
+              <strong>Descendants</strong> - Only copy direct descendants.
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="traversal-filter" value="ancestry-descendancy">
+              <strong>Ancestry + Descendancy</strong> - Copy both ancestors and descendants.
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="traversal-filter" value="cousins">
+              <strong>Cousins</strong> - Copy ancestors, descendants, and cousins (direct descendants of ancestors). Does not include spouses.
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="traversal-filter" value="cousins-spouses">
+              <strong>Cousins + Spouses</strong> - Copy ancestors, descendants, cousins, and spouses of all those persons.
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>How many persons?</h3>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <input type="text" class="form-control" id="numberPersons" value="30">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button id="copy-btn" class="btn btn-primary btn-lg">Copy</button>
     
     </div>
     

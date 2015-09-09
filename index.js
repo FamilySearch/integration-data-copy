@@ -5,7 +5,6 @@ $(function(){
   
   initializeAuthentication();
   setupStart();
-  showStart();
   
 });
 
@@ -18,7 +17,6 @@ function initializeAuthentication(){
       $prodAuth.find('.no-auth').hide();
       $prodAuth.find('.auth').show();
       Cookies.set('production-token', token);
-      showStart();
     });
   });
   
@@ -32,7 +30,6 @@ function initializeAuthentication(){
       $sandboxAuth.find('.no-auth').hide();
       $sandboxAuth.find('.auth').show();
       Cookies.set('sandbox-token', token);
-      showStart();
     });
   });
   
@@ -75,15 +72,6 @@ function getStartPersonSummary(personId){
     $('#start-search-btn').prop('disabled', false);
     $('#start-person-details .error').html('<div class="alert alert-danger">Unable to load person ' + personId + '.</div>');
   });
-}
-
-/**
- * Show the start person section if we are authenticated in both environments.
- */
-function showStart(){
-  if(productionClient.hasAccessToken() && sandboxClient.hasAccessToken()){
-    $('#start').show();
-  }
 }
 
 /**

@@ -2,10 +2,10 @@
   display: none;
 }
 
-#start {
-  display: none;
-}
-
 #start-person-details .name {
   font-weight: bold;
+}
+
+.section {
+  margin: 20px 0;
 }
