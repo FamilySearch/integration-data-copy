@@ -141,37 +141,39 @@ function getFSClient(environment){
   return new FamilySearch(config);
 }
 
-var PersonRow = function(person){
-  this.person = person;
-  this.oldId = person.getId();
+/**
+ * Base class for managing display status of saved persons and relationships
+ */
+var Row = function(data){
+  this.data = data;
+  this.oldId = data.getId();
   this.newId = '';
   this.status = 'active';
   this.$dom = $();
   this.render();
 };
 
-PersonRow.prototype.render = function(){
-  var $new = $(PersonRow.template({
-    productionId: this.oldId,
-    sandboxId: this.newId,
-    name: this.person.getDisplayName(),
-    status: this.status
-  }));
+Row.prototype.render = function(){
+  var $new = $(this.template(this.templateData()));
   this.$dom.replaceWith($new);
   this.$dom = $new;
 };
 
-PersonRow.prototype.save = function(){
+Row.prototype.templateData = function(){
+  return {};
+};
+
+Row.prototype.save = function(){
   var self = this;
-  self.person.client = sandboxClient;
-  self.person.clearIds();
+  self.data.client = sandboxClient;
+  self.data.clearIds();
   self.status = 'info';
   self.render();
   
-  var promise = self.person.save();
+  var promise = self.data.save();
   promise.then(function(){
     self.status = 'success';
-    self.newId = self.person.getId();
+    self.newId = self.data.getId();
     self.render();
   }, function(e){
     self.status = 'danger';
@@ -181,7 +183,22 @@ PersonRow.prototype.save = function(){
   return promise;
 };
 
-PersonRow.template = Handlebars.compile($('#person-row').html());
+var PersonRow = function(person){
+  Row.call(this, person);
+};
+
+PersonRow.prototype = Object.create(Row.prototype);
+
+PersonRow.prototype.templateData = function(){
+  return {
+    productionId: this.oldId,
+    sandboxId: this.newId,
+    name: this.data.getDisplayName(),
+    status: this.status
+  };
+};
+
+PersonRow.prototype.template = Handlebars.compile($('#person-row').html());
 
 /**
  * Reset internal IDs so that, when copying, the save function
