@@ -7,6 +7,14 @@ var copied = {
   children: {}
 };
 
+var queue = async.queue(function(data, callback){
+  data.save().then(function(){
+    callback();
+  }, function(e){
+    callback();
+  });
+}, 5);
+
 $(function(){
   
   initializeAuthentication();
@@ -55,7 +63,7 @@ function copy(){
 function processPerson(person){
   var row = new PersonRow(person);
   $('#person-table').append(row.$dom);
-  row.save();
+  queue.push(row);
 }
 
 function processMarriage(wife, husband, marriage){
@@ -160,7 +168,8 @@ PersonRow.prototype.save = function(){
   self.status = 'info';
   self.render();
   
-  self.person.save().then(function(){
+  var promise = self.person.save();
+  promise.then(function(){
     self.status = 'success';
     self.newId = self.person.getId();
     self.render();
@@ -169,6 +178,7 @@ PersonRow.prototype.save = function(){
     self.render();
     console.log(e.stack);
   });
+  return promise;
 };
 
 PersonRow.template = Handlebars.compile($('#person-row').html());
