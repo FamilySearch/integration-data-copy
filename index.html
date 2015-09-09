@@ -127,13 +127,35 @@
         </div>
       </div>
       
-      <button id="copy-btn" class="btn btn-primary btn-lg">Copy</button>
+      <div class="section">
+        <button id="copy-btn" class="btn btn-primary btn-lg">Copy</button>
+      </div>
+      
+      <div id="status" class="section">
+        <h4>Persons</h4>
+        <table id="person-table" class="table table-bordered">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Status</th>
+          </tr>
+        </table>
+      </div>
     
     </div>
+    
+    <script id="person-row" type="text/html">
+      <tr>
+        <td>{{id}}</td>
+        <td>{{name}}</td>
+        <td class="status">{{status}}</td>
+      </tr>
+    </script>
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.0.4/familysearch-javascript-sdk.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js"></script>
     <script src="fs-traversal.min.js"></script>
     <script src="index.js"></script>
     

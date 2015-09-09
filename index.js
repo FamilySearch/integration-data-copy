@@ -1,5 +1,11 @@
 var productionClient = getFSClient('sandbox'),
     sandboxClient = getFSClient('sandbox');
+    
+var saved = {
+  persons: {},
+  couples: {},
+  children: {}
+};
 
 $(function(){
   
@@ -25,7 +31,10 @@ $(function(){
  */
 function copy(){
   var traversal = FSTraversal(productionClient)
-    .order('distance');
+    .order('distance')
+    .person(processPerson)
+    .marriage(processMarriage)
+    .child(processChild);
   
   var filter = $('input[name=traversal-filter]:checked').val();
   if(filter !== 'anyone'){
@@ -37,11 +46,27 @@ function copy(){
     traversal.limit(parseInt(limit, 10));
   }
   
-  traversal.person(function(person){
-    console.log(person.getId());
-  });
+  traversal.start($('#startPersonId').val().trim());
+}
+
+/**
+ * Save the person. Create and update row in log table.
+ */
+function processPerson(person){
+  // Create log row
+  var row = new PersonRow(person);
+  $('#person-table').append(row.$dom);
   
-  traversal.start();
+  // Save
+  // Update log row with saved status
+}
+
+function processMarriage(wife, husband, marriage){
+  
+}
+
+function processChild(child, mother, father, childRelationship){
+  
 }
 
 /**
@@ -110,3 +135,21 @@ function getFSClient(environment){
   }
   return new FamilySearch(config);
 }
+
+var PersonRow = function(person){
+  this.person = person;
+  this.$dom = $();
+  this.render();
+};
+
+PersonRow.prototype.render = function(){
+  var $new = $(PersonRow.template({
+    id: this.person.getId(),
+    name: this.person.getDisplayName(),
+    status: 'queued'
+  }));
+  this.$dom.replaceWith($new);
+  this.$dom = $new;
+};
+
+PersonRow.template = Handlebars.compile($('#person-row').html());
