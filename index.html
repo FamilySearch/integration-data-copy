@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FamilySearch Sandbox Data Copy</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      
+      <h1>FamilySearch Sandbox Data Copy</h1>
+      <p>Copy data from the FamilySearch production tree into the sandbox tree.</p>
+    
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="prod-auth" class="panel panel-default auth-panel">
+            <div class="panel-heading">
+              <h3 class="panel-title">PRODUCTION</h3>
+            </div>
+            <div class="panel-body">
+              <div class="no-auth">
+                <button class="btn btn-primary">Sign In</button>
+              </div>
+              <div class="auth">
+                <div class="alert alert-info">You are signed in with production.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div id="sandbox-auth" class="panel panel-default auth-panel">
+            <div class="panel-heading">
+              <h3 class="panel-title">SANDBOX</h3>
+            </div>
+            <div class="panel-body">
+              <div class="no-auth">
+                <button class="btn btn-primary">Sign In</button>
+              </div>
+              <div class="auth">
+                <div class="alert alert-info">You are signed in with sandbox.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.0.4/familysearch-javascript-sdk.min.js"></script>
+    <script src="index.js"></script>
+    
+  </body>
+</html>
