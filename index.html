@@ -14,6 +14,7 @@
       <h1>FamilySearch Sandbox Data Copy</h1>
       <p>Copy data from the FamilySearch production tree into the sandbox tree.</p>
     
+      <h3>Sign In</h3>
       <div class="row">
         <div class="col-sm-6">
           <div id="prod-auth" class="panel panel-default auth-panel">
@@ -42,6 +43,28 @@
               <div class="auth">
                 <div class="alert alert-info">You are signed in with sandbox.</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="start">
+        <h3>Starting Person</h3>
+        <p class="help-block">Enter the ID of a person where the copying will start.</p>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="input-group">
+              <input type="text" class="form-control" id="startPersonId" placeholder="PPPP-PPP">
+              <span class="input-group-btn">
+                <button id="start-search-btn" class="btn btn-default" type="button">Search</button>
+              </span>
+            </div>
+          </div>
+          <div class="col-sm-9">
+            <div id="start-person-details">
+              <div class="name"></div>
+              <div class="lifespan"></div>
+              <div class="error"></div>
             </div>
           </div>
         </div>

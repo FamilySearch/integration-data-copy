@@ -1,3 +1,11 @@
 .auth-panel .auth {
   display: none;
 }
+
+#start {
+  display: none;
+}
+
+#start-person-details .name {
+  font-weight: bold;
+}
