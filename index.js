@@ -1,7 +1,7 @@
 var productionClient = getFSClient('sandbox'),
     sandboxClient = getFSClient('sandbox');
     
-var copied = {
+var cache = {
   persons: {},
   couples: {},
   children: {}
@@ -64,10 +64,13 @@ function processPerson(person){
   var row = new PersonRow(person);
   $('#person-table').append(row.$dom);
   queue.push(row);
+  cache.persons[person.getId()] = row;
 }
 
 function processMarriage(wife, husband, marriage){
-  
+  var row = new CoupleRow(marriage);
+  $('#couple-table').append(row.$dom);
+  cache.couples[marriage.getId()] = row;
 }
 
 function processChild(child, mother, father, childRelationship){
@@ -183,6 +186,9 @@ Row.prototype.save = function(){
   return promise;
 };
 
+/**
+ * Persons
+ */
 var PersonRow = function(person){
   Row.call(this, person);
 };
@@ -199,6 +205,28 @@ PersonRow.prototype.templateData = function(){
 };
 
 PersonRow.prototype.template = Handlebars.compile($('#person-row').html());
+
+/**
+ * Couple Relationships
+ */
+var CoupleRow = function(couple){
+  this.names = cache.persons[couple.getHusbandId()].data.getDisplayName() + ' and ' 
+    + cache.persons[couple.getWifeId()].data.getDisplayName();
+  Row.call(this, couple);
+};
+
+CoupleRow.prototype = Object.create(Row.prototype);
+
+CoupleRow.prototype.templateData = function(){
+  return {
+    productionId: this.oldId,
+    sandboxId: this.newId,
+    names: this.names,
+    status: this.status
+  };
+};
+
+CoupleRow.prototype.template = Handlebars.compile($('#couple-row').html());
 
 /**
  * Reset internal IDs so that, when copying, the save function

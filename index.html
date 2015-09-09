@@ -131,13 +131,24 @@
         <button id="copy-btn" class="btn btn-primary btn-lg">Copy</button>
       </div>
       
-      <div id="status" class="section">
+      <div class="section">
         <h4>Persons</h4>
         <table id="person-table" class="table table-bordered">
           <tr>
             <th>Production ID</th>
             <th>Sandbox ID</th>
             <th>Name</th>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h4>Couples</h4>
+        <table id="couple-table" class="table table-bordered">
+          <tr>
+            <th>Production ID</th>
+            <th>Sandbox ID</th>
+            <th>Names</th>
           </tr>
         </table>
       </div>
@@ -149,6 +160,14 @@
         <td>{{productionId}}</td>
         <td>{{sandboxId}}</td>
         <td>{{name}}</td>
+      </tr>
+    </script>
+    
+    <script id="couple-row" type="text/html">
+      <tr class="{{status}}">
+        <td>{{productionId}}</td>
+        <td>{{sandboxId}}</td>
+        <td>{{names}}</td>
       </tr>
     </script>
     
