@@ -4,9 +4,45 @@ var productionClient = getFSClient('sandbox'),
 $(function(){
   
   initializeAuthentication();
-  setupStart();
+  
+  $('#start-search-btn').click(function(){
+    var personId = $('#startPersonId').val().trim();
+    if(!/^[A-Z0-9]+-[A-Z0-9]+$/.test(personId)){
+      $('#start').addClass('has-error');
+    } else {
+      getStartPersonSummary(personId);
+      $('#start').removeClass('has-error');
+    }
+  });
+  
+  // TODO: validation
+  $('#copy-btn').click(copy);
   
 });
+
+/**
+ * Setup traversal and start copying
+ */
+function copy(){
+  var traversal = FSTraversal(productionClient)
+    .order('distance');
+  
+  var filter = $('input[name=traversal-filter]:checked').val();
+  if(filter !== 'anyone'){
+    traversal.filter(filter);
+  }
+  
+  var limit = $('#numberPersons').val().trim();
+  if(limit !== '' && parseInt(limit, 10)){
+    traversal.limit(parseInt(limit, 10));
+  }
+  
+  traversal.person(function(person){
+    console.log(person.getId());
+  });
+  
+  traversal.start();
+}
 
 /**
  * Setup auth controls and events; detect the initial auth state.
@@ -37,21 +73,6 @@ function initializeAuthentication(){
     $sandboxAuth.find('.no-auth').hide();
     $sandboxAuth.find('.auth').show();
   }
-}
-
-/**
- * Bind events to the start id input
- */
-function setupStart(){
-  $('#start-search-btn').click(function(){
-    var personId = $('#startPersonId').val().trim();
-    if(!/^[A-Z0-9]+-[A-Z0-9]+$/.test(personId)){
-      $('#start').addClass('has-error');
-    } else {
-      getStartPersonSummary(personId);
-      $('#start').removeClass('has-error');
-    }
-  });
 }
 
 /**
