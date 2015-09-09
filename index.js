@@ -1,7 +1,7 @@
 var productionClient = getFSClient('sandbox'),
     sandboxClient = getFSClient('sandbox');
     
-var saved = {
+var copied = {
   persons: {},
   couples: {},
   children: {}
@@ -53,12 +53,9 @@ function copy(){
  * Save the person. Create and update row in log table.
  */
 function processPerson(person){
-  // Create log row
   var row = new PersonRow(person);
   $('#person-table').append(row.$dom);
-  
-  // Save
-  // Update log row with saved status
+  row.save();
 }
 
 function processMarriage(wife, husband, marriage){
@@ -138,18 +135,62 @@ function getFSClient(environment){
 
 var PersonRow = function(person){
   this.person = person;
+  this.oldId = person.getId();
+  this.newId = '';
+  this.status = 'active';
   this.$dom = $();
   this.render();
 };
 
 PersonRow.prototype.render = function(){
   var $new = $(PersonRow.template({
-    id: this.person.getId(),
+    productionId: this.oldId,
+    sandboxId: this.newId,
     name: this.person.getDisplayName(),
-    status: 'queued'
+    status: this.status
   }));
   this.$dom.replaceWith($new);
   this.$dom = $new;
 };
 
+PersonRow.prototype.save = function(){
+  var self = this;
+  self.person.client = sandboxClient;
+  self.person.clearIds();
+  self.status = 'info';
+  self.render();
+  
+  self.person.save().then(function(){
+    self.status = 'success';
+    self.newId = self.person.getId();
+    self.render();
+  }, function(e){
+    self.status = 'danger';
+    self.render();
+    console.log(e.stack);
+  });
+};
+
 PersonRow.template = Handlebars.compile($('#person-row').html());
+
+/**
+ * Reset internal IDs so that, when copying, the save function
+ * thinks all names and facts are new.
+ */
+FamilySearch.BaseClass.prototype.clearId = function(){
+  delete this.data.id;
+};
+FamilySearch.Person.prototype.clearIds = function(){
+  this.clearId();
+  this.getGender().clearId();
+  
+  var names = this.getNames();
+  for(var i = 0; i < names.length; i++){
+    names[i].clearId();
+  }
+  
+  var facts = this.getFacts();
+  for(var i = 0; i < facts.length; i++){
+    facts[i].clearId();
+  }
+};

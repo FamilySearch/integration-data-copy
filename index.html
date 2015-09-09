@@ -121,7 +121,7 @@
         <div class="row">
           <div class="col-sm-3">
             <div class="form-group">
-              <input type="text" class="form-control" id="numberPersons" value="30">
+              <input type="text" class="form-control" id="numberPersons" value="5">
             </div>
           </div>
         </div>
@@ -135,9 +135,9 @@
         <h4>Persons</h4>
         <table id="person-table" class="table table-bordered">
           <tr>
-            <th>ID</th>
+            <th>Production ID</th>
+            <th>Sandbox ID</th>
             <th>Name</th>
-            <th>Status</th>
           </tr>
         </table>
       </div>
@@ -145,10 +145,10 @@
     </div>
     
     <script id="person-row" type="text/html">
-      <tr>
-        <td>{{id}}</td>
+      <tr class="{{status}}">
+        <td>{{productionId}}</td>
+        <td>{{sandboxId}}</td>
         <td>{{name}}</td>
-        <td class="status">{{status}}</td>
       </tr>
     </script>
     
