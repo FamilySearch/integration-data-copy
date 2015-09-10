@@ -152,6 +152,9 @@ var Row = function(data){
   this.oldId = data.getId();
   this.newId = '';
   this.status = 'active';
+  // callbacks are only fired once and new callbacks
+  // are fired immediately if `fire()` has already been called
+  this.savedCallbacks = $.Callbacks('once memory');
   this.$dom = $();
   this.render();
 };
@@ -178,12 +181,17 @@ Row.prototype.save = function(){
     self.status = 'success';
     self.newId = self.data.getId();
     self.render();
+    self.savedCallbacks.fire();
   }, function(e){
     self.status = 'danger';
     self.render();
     console.log(e.stack);
   });
   return promise;
+};
+
+Row.prototype.onSave = function(cb){
+  this.savedCallbacks.add(cb);
 };
 
 /**
@@ -210,12 +218,44 @@ PersonRow.prototype.template = Handlebars.compile($('#person-row').html());
  * Couple Relationships
  */
 var CoupleRow = function(couple){
-  this.names = cache.persons[couple.getHusbandId()].data.getDisplayName() + ' and ' 
-    + cache.persons[couple.getWifeId()].data.getDisplayName();
+  this.husbandRow = cache.persons[couple.getHusbandId()];
+  this.wifeRow = cache.persons[couple.getWifeId()];
+  this.names = this.husbandRow.data.getDisplayName() + ' and ' + this.wifeRow.data.getDisplayName();
+  
   Row.call(this, couple);
+  
+  // When the persons in the relationship have both been saved
+  // then add this relationship to the save queue
+  var husbandSaved = false,
+      wifeSaved = false,
+      queued = false,
+      self = this;
+  this.husbandRow.onSave(function(){
+    husbandSaved = true;
+    if(wifeSaved && !queued){
+      queued = true;
+      self.prepareSave();
+    }
+  });
+  this.wifeRow.onSave(function(){
+    wifeSaved = true;
+    if(husbandSaved && !queued){
+      queued = true;
+      self.prepareSave();
+    }
+  });
 };
 
 CoupleRow.prototype = Object.create(Row.prototype);
+
+/**
+ * Update husband and wife ids. Add to save queue.
+ */
+CoupleRow.prototype.prepareSave = function(){
+  this.data.setHusband(this.husbandRow.data);
+  this.data.setWife(this.wifeRow.data);
+  queue.push(this);
+};
 
 CoupleRow.prototype.templateData = function(){
   return {
@@ -232,9 +272,11 @@ CoupleRow.prototype.template = Handlebars.compile($('#couple-row').html());
  * Reset internal IDs so that, when copying, the save function
  * thinks all names and facts are new.
  */
+
 FamilySearch.BaseClass.prototype.clearId = function(){
   delete this.data.id;
 };
+
 FamilySearch.Person.prototype.clearIds = function(){
   this.clearId();
   this.getGender().clearId();
@@ -243,6 +285,19 @@ FamilySearch.Person.prototype.clearIds = function(){
   for(var i = 0; i < names.length; i++){
     names[i].clearId();
   }
+  
+  var facts = this.getFacts();
+  for(var i = 0; i < facts.length; i++){
+    facts[i].clearId();
+  }
+};
+
+FamilySearch.Couple.prototype.clearIds = function(){
+  this.clearId();
+  
+  // Whether a relationship is created or updated also depends on the presence
+  // of the `relationship` link. So lets delete it.
+  delete this.data.links.relationship;
   
   var facts = this.getFacts();
   for(var i = 0; i < facts.length; i++){
