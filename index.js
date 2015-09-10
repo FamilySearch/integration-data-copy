@@ -97,7 +97,17 @@ function initializeAuthentication(){
   
   if(productionClient.hasAccessToken()){
     $prodAuth.find('.no-auth').hide();
-    $prodAuth.find('.auth').show();
+    $prodAuth.find('.verify').show();
+    productionClient.getCurrentUser().then(function(){
+      $prodAuth.find('.no-auth').hide();
+      $prodAuth.find('.auth').show();
+      $prodAuth.find('.verify').hide();
+    }, function(){
+      $prodAuth.find('.no-auth').show();
+      $prodAuth.find('.auth').hide();
+      $prodAuth.find('.verify').show();
+      Cookies.expire('production-token');
+    });
   }
   
   var $sandboxAuth = $('#sandbox-auth').click(function(){
@@ -110,7 +120,17 @@ function initializeAuthentication(){
   
   if(sandboxClient.hasAccessToken()){
     $sandboxAuth.find('.no-auth').hide();
-    $sandboxAuth.find('.auth').show();
+    $sandboxAuth.find('.verify').show();
+    sandboxClient.getCurrentUser().then(function(){
+      $sandboxAuth.find('.no-auth').hide();
+      $sandboxAuth.find('.auth').show();
+      $sandboxAuth.find('.verify').hide();
+    }, function(){
+      $sandboxAuth.find('.no-auth').show();
+      $sandboxAuth.find('.auth').hide();
+      $sandboxAuth.find('.verify').hide();
+      Cookies.expire('sandbox-token');
+    });
   }
 }
 
