@@ -152,6 +152,17 @@
           </tr>
         </table>
       </div>
+      
+      <div class="section">
+        <h4>Child and Parents</h4>
+        <table id="child-table" class="table table-bordered">
+          <tr>
+            <th>Production ID</th>
+            <th>Sandbox ID</th>
+            <th>Names</th>
+          </tr>
+        </table>
+      </div>
     
     </div>
     
@@ -163,7 +174,7 @@
       </tr>
     </script>
     
-    <script id="couple-row" type="text/html">
+    <script id="relationship-row" type="text/html">
       <tr class="{{status}}">
         <td>{{productionId}}</td>
         <td>{{sandboxId}}</td>
@@ -173,10 +184,11 @@
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.0.4/familysearch-javascript-sdk.min.js"></script>
+    <!-- <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.0.4/familysearch-javascript-sdk.min.js"></script> -->
+    <script src="familysearch-javascript-sdk.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/async/1.4.2/async.min.js"></script>
-    <script src="fs-traversal.min.js"></script>
+    <script src="//cdn.jsdelivr.net/fs-traversal/4.0.0/fs-traversal.min.js"></script>
     <script src="index.js"></script>
     
   </body>

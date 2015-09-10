@@ -7,13 +7,17 @@ var cache = {
   children: {}
 };
 
-var queue = async.queue(function(data, callback){
+var personQueue = async.queue(queueWorker, 5);
+var relationshipQueue = async.queue(queueWorker, 1);
+
+function queueWorker(data, callback){
   data.save().then(function(){
     callback();
   }, function(e){
+    console.error(e.stack);
     callback();
   });
-}, 5);
+}
 
 $(function(){
   
@@ -63,7 +67,7 @@ function copy(){
 function processPerson(person){
   var row = new PersonRow(person);
   $('#person-table').append(row.$dom);
-  queue.push(row);
+  personQueue.push(row);
   cache.persons[person.getId()] = row;
 }
 
@@ -74,7 +78,9 @@ function processMarriage(wife, husband, marriage){
 }
 
 function processChild(child, mother, father, childRelationship){
-  
+  var row = new ChildRow(childRelationship);
+  $('#child-table').append(row.$dom);
+  cache.children[childRelationship.getId()] = row;
 }
 
 /**
@@ -185,7 +191,7 @@ Row.prototype.save = function(){
   }, function(e){
     self.status = 'danger';
     self.render();
-    console.log(e.stack);
+    console.error(e.stack);
   });
   return promise;
 };
@@ -226,23 +232,17 @@ var CoupleRow = function(couple){
   
   // When the persons in the relationship have both been saved
   // then add this relationship to the save queue
-  var husbandSaved = false,
-      wifeSaved = false,
-      queued = false,
-      self = this;
-  this.husbandRow.onSave(function(){
-    husbandSaved = true;
-    if(wifeSaved && !queued){
-      queued = true;
-      self.prepareSave();
-    }
+  var self = this;
+  self.husbandSaved = false;
+  self.wifeSaved = false;
+  self.queued = false;
+  self.husbandRow.onSave(function(){
+    self.husbandSaved = true;
+    self.prepareSave();
   });
-  this.wifeRow.onSave(function(){
-    wifeSaved = true;
-    if(husbandSaved && !queued){
-      queued = true;
-      self.prepareSave();
-    }
+  self.wifeRow.onSave(function(){
+    self.wifeSaved = true;
+    self.prepareSave();
   });
 };
 
@@ -252,9 +252,12 @@ CoupleRow.prototype = Object.create(Row.prototype);
  * Update husband and wife ids. Add to save queue.
  */
 CoupleRow.prototype.prepareSave = function(){
-  this.data.setHusband(this.husbandRow.data);
-  this.data.setWife(this.wifeRow.data);
-  queue.push(this);
+  if(this.husbandSaved && this.wifeSaved && !this.queued){
+    this.data.setHusband(this.husbandRow.data);
+    this.data.setWife(this.wifeRow.data);
+    this.queued = true;
+    relationshipQueue.push(this);
+  }
 };
 
 CoupleRow.prototype.templateData = function(){
@@ -266,7 +269,91 @@ CoupleRow.prototype.templateData = function(){
   };
 };
 
-CoupleRow.prototype.template = Handlebars.compile($('#couple-row').html());
+CoupleRow.prototype.template = Handlebars.compile($('#relationship-row').html());
+
+/**
+ * Child and parents relationship
+ */
+var ChildRow = function(data){
+  var names = [];
+  
+  this.fatherRow = cache.persons[data.getFatherId()];
+  if(this.fatherRow){
+    names.push(this.fatherRow.data.getDisplayName());
+  }
+  this.motherRow = cache.persons[data.getMotherId()];
+  if(this.motherRow){
+    names.push(this.motherRow.data.getDisplayName());
+  }
+  this.childRow = cache.persons[data.getChildId()];
+  names.push(this.childRow.data.getDisplayName());
+  
+  this.names = names.join(', ');
+  
+  Row.call(this, data);
+  
+  // When the persons in the relationship have both been saved
+  // then add this relationship to the save queue
+  var self = this;
+  self.fatherSaved = false;
+  self.motherSaved = false;
+  self.childSaved = false;
+  self.queued = false;
+  
+  if(self.fatherRow){
+    self.fatherRow.onSave(function(){
+      self.fatherSaved = true;
+      self.prepareSave();
+    });
+  } else {
+    self.fatherSaved = true;
+  }
+  
+  if(self.motherRow){
+    self.motherRow.onSave(function(){
+      self.motherSaved = true;
+      self.prepareSave();
+    });
+  } else {
+    self.motherSaved = true;
+  }
+  
+  self.childRow.onSave(function(){
+    self.childSaved = true;
+    self.prepareSave();
+  });
+};
+
+ChildRow.prototype = Object.create(Row.prototype);
+
+/**
+ * Check that all persons have been saved.
+ * Update person ids. Add to save queue.
+ */
+ChildRow.prototype.prepareSave = function(){
+  if(this.fatherSaved && this.motherSaved && this.childSaved && !this.queued){
+    if(this.fatherRow){
+      this.data.setFather(this.fatherRow.data);
+    }
+    if(this.motherRow){
+      this.data.setMother(this.motherRow.data);
+    }
+    this.data.setChild(this.childRow.data);
+    this.queued = true;
+    relationshipQueue.push(this);
+  }
+};
+
+ChildRow.prototype.templateData = function(){
+  return {
+    productionId: this.oldId,
+    sandboxId: this.newId,
+    names: this.names,
+    status: this.status
+  };
+};
+
+ChildRow.prototype.template = Handlebars.compile($('#relationship-row').html());
 
 /**
  * Reset internal IDs so that, when copying, the save function
@@ -302,5 +389,23 @@ FamilySearch.Couple.prototype.clearIds = function(){
   var facts = this.getFacts();
   for(var i = 0; i < facts.length; i++){
     facts[i].clearId();
+  }
+};
+
+FamilySearch.ChildAndParents.prototype.clearIds = function(){
+  this.clearId();
+  
+  // Whether a relationship is created or updated also depends on the presence
+  // of the `relationship` link. So lets delete it.
+  delete this.data.links.relationship;
+  
+  var fatherFacts = this.getFatherFacts();
+  for(var i = 0; i < fatherFacts.length; i++){
+    fatherFacts[i].clearId();
+  }
+  
+  var motherFacts = this.getMotherFacts();
+  for(var i = 0; i < motherFacts.length; i++){
+    motherFacts[i].clearId();
   }
 };
