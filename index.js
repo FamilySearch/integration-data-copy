@@ -168,6 +168,8 @@ Row.prototype.templateData = function(){
 Row.prototype.save = function(){
   var self = this;
   self.data.client = sandboxClient;
+  self.data.plumbing = sandboxClient.plumbing;
+  self.data.helpers = sandboxClient.helpers;
   self.data.clearIds();
   self.status = 'info';
   self.render();
