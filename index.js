@@ -24,7 +24,10 @@ $(function(){
   initializeAuthentication();
   
   // TODO: validation
-  $('#copy-btn').click(copy);
+  $('#copy-btn').click(function(){
+    $(this).prop('disabled', true);
+    copy();
+  });
   
 });
 
@@ -261,7 +264,7 @@ CoupleRow.prototype.templateData = function(){
   };
 };
 
-CoupleRow.prototype.template = Handlebars.compile($('#relationship-row').html());
+CoupleRow.prototype.template = Handlebars.compile($('#couple-row').html());
 
 /**
  * Child and parents relationship
@@ -345,7 +348,7 @@ ChildRow.prototype.templateData = function(){
   };
 };
 
-ChildRow.prototype.template = Handlebars.compile($('#relationship-row').html());
+ChildRow.prototype.template = Handlebars.compile($('#child-row').html());
 
 /**
  * Reset internal IDs so that, when copying, the save function
