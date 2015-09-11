@@ -1,4 +1,4 @@
-var productionClient = getFSClient('sandbox'),
+var productionClient = getFSClient('production'),
     sandboxClient = getFSClient('sandbox');
     
 var cache = {
@@ -22,16 +22,6 @@ function queueWorker(data, callback){
 $(function(){
   
   initializeAuthentication();
-  
-  $('#start-search-btn').click(function(){
-    var personId = $('#startPersonId').val().trim();
-    if(!/^[A-Z0-9]+-[A-Z0-9]+$/.test(personId)){
-      $('#start').addClass('has-error');
-    } else {
-      getStartPersonSummary(personId);
-      $('#start').removeClass('has-error');
-    }
-  });
   
   // TODO: validation
   $('#copy-btn').click(copy);
@@ -132,26 +122,6 @@ function initializeAuthentication(){
       Cookies.expire('sandbox-token');
     });
   }
-}
-
-/**
- * Get and display the start person's name and lifespan
- */
-function getStartPersonSummary(personId){
-  $('#start-search-btn').prop('disabled', true);
-  $('#start-person-details .name').text('');
-  $('#start-person-details .lifespan').text('');
-  $('#start-person-details .error').html('');
-  
-  productionClient.getPerson(personId).then(function(response){
-    $('#start-search-btn').prop('disabled', false);
-    var person = response.getPerson();
-    $('#start-person-details .name').text(person.getDisplayName());
-    $('#start-person-details .lifespan').text(person.getDisplayLifeSpan());
-  }).catch(function(){
-    $('#start-search-btn').prop('disabled', false);
-    $('#start-person-details .error').html('<div class="alert alert-danger">Unable to load person ' + personId + '.</div>');
-  });
 }
 
 /**
