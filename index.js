@@ -46,11 +46,14 @@ function copy(){
     traversal.filter(filter);
   }
   
-  var limit = $('#numberPersons').val().trim();
-  if(limit !== '' && parseInt(limit, 10)){
-    traversal.limit(parseInt(limit, 10));
-  }
+  // parseInt will return NaN if an number wasn't found. We || with 5
+  // to gaurantee that we end up with a number.
+  var limit = parseInt($('#numberPersons').val().trim(), 10) || 5;
   
+  // Enforce a maximum of 100
+  limit = Math.min(limit, 100);
+  
+  traversal.limit(limit);
   traversal.start($('#startPersonId').val().trim());
 }
 
