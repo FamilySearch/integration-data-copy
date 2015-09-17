@@ -109,7 +109,7 @@ function initializeAuthentication(){
     }, function(){
       $prodAuth.find('.no-auth').show();
       $prodAuth.find('.auth').hide();
-      $prodAuth.find('.verify').show();
+      $prodAuth.find('.verify').hide();
       Cookies.expire('production-token');
     });
   }
