@@ -61,22 +61,30 @@ function copy(){
  * Save the person. Create and update row in log table.
  */
 function processPerson(person){
-  var row = new PersonRow(person);
-  $('#person-table').append(row.$dom);
-  personQueue.push(row);
-  cache.persons[person.getId()] = row;
+  if(!person.isLiving()){
+    var row = new PersonRow(person);
+    $('#person-table').append(row.$dom);
+    personQueue.push(row);
+    cache.persons[person.getId()] = row;
+  }
 }
 
 function processMarriage(wife, husband, marriage){
-  var row = new CoupleRow(marriage);
-  $('#couple-table').append(row.$dom);
-  cache.couples[marriage.getId()] = row;
+  if(!wife.isLiving() && !husband.isLiving()){
+    var row = new CoupleRow(marriage);
+    $('#couple-table').append(row.$dom);
+    cache.couples[marriage.getId()] = row;
+  }
 }
 
 function processChild(child, mother, father, childRelationship){
-  var row = new ChildRow(childRelationship);
-  $('#child-table').append(row.$dom);
-  cache.children[childRelationship.getId()] = row;
+  if(!child.isLiving() 
+      && (!mother || !mother.isLiving()) 
+      && (!father || !father.isLiving())){
+    var row = new ChildRow(childRelationship);
+    $('#child-table').append(row.$dom);
+    cache.children[childRelationship.getId()] = row;
+  }
 }
 
 /**
@@ -173,17 +181,17 @@ Row.prototype.templateData = function(){
 
 Row.prototype.save = function(){
   var self = this;
-  self.data.client = sandboxClient;
-  self.data.plumbing = sandboxClient.plumbing;
-  self.data.helpers = sandboxClient.helpers;
-  self.data.clearIds();
+  
+  self.newData = this.copyData();
+  
+  self.newData.clearIds();
   self.status = 'info';
   self.render();
   
-  var promise = self.data.save();
+  var promise = self.newData.save();
   promise.then(function(){
     self.status = 'success';
-    self.newId = self.data.getId();
+    self.newId = self.newData.getId();
     self.render();
     self.savedCallbacks.fire();
   }, function(e){
@@ -214,6 +222,10 @@ PersonRow.prototype.templateData = function(){
     name: this.data.getDisplayName(),
     status: this.status
   };
+};
+
+PersonRow.prototype.copyData = function(){
+  return sandboxClient.createPerson(this.data.toJSON());
 };
 
 PersonRow.prototype.template = Handlebars.compile($('#person-row').html());
@@ -247,12 +259,10 @@ var CoupleRow = function(couple){
 CoupleRow.prototype = Object.create(Row.prototype);
 
 /**
- * Update husband and wife ids. Add to save queue.
+ * Add to save queue when ready.
  */
 CoupleRow.prototype.prepareSave = function(){
   if(this.husbandSaved && this.wifeSaved && !this.queued){
-    this.data.setHusband(this.husbandRow.data);
-    this.data.setWife(this.wifeRow.data);
     this.queued = true;
     relationshipQueue.push(this);
   }
@@ -265,6 +275,13 @@ CoupleRow.prototype.templateData = function(){
     names: this.names,
     status: this.status
   };
+};
+
+CoupleRow.prototype.copyData = function(){
+  var newCouple = sandboxClient.createCouple(this.data.toJSON());
+  newCouple.setHusband(this.husbandRow.newData);
+  newCouple.setWife(this.wifeRow.newData);
+  return newCouple;
 };
 
 CoupleRow.prototype.template = Handlebars.compile($('#couple-row').html());
@@ -330,13 +347,6 @@ ChildRow.prototype = Object.create(Row.prototype);
  */
 ChildRow.prototype.prepareSave = function(){
   if(this.fatherSaved && this.motherSaved && this.childSaved && !this.queued){
-    if(this.fatherRow){
-      this.data.setFather(this.fatherRow.data);
-    }
-    if(this.motherRow){
-      this.data.setMother(this.motherRow.data);
-    }
-    this.data.setChild(this.childRow.data);
     this.queued = true;
     relationshipQueue.push(this);
   }
@@ -349,6 +359,18 @@ ChildRow.prototype.templateData = function(){
     names: this.names,
     status: this.status
   };
+};
+
+ChildRow.prototype.copyData = function(){
+  var newChild = sandboxClient.createChildAndParents(this.data.toJSON());
+  newChild.setChild(this.childRow.newData);
+  if(this.fatherRow){
+    newChild.setFather(this.fatherRow.newData);
+  }
+  if(this.motherRow){
+    newChild.setMother(this.motherRow.newData);
+  }
+  return newChild;
 };
 
 ChildRow.prototype.template = Handlebars.compile($('#child-row').html());
