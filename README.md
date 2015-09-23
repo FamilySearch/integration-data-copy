@@ -1,10 +1,10 @@
 # sandbox-data-copy
 This is a utility that copies data from production into sandbox
 
-Basic instruction on use are:
+Basic instructions on use are:
 * Authenticate to production and sandbox by clicking on each "Sign In" button
 * Enter a starting PID from production
-* Select they types of people you want to have copied from production to Sandbox.
+* Select the types of people you want to have copied from production to Sandbox.
 * Click the "Copy" button
 
 **Note:** The utility will copy only deceased people from the authenticated user’s ancestry with a max limit of 100 persons per copy. Memories, sources and other artifacts are not copied.
