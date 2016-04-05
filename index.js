@@ -22,7 +22,8 @@ var cache = {
   children: {}
 };
 
-var personQueue = async.queue(queueWorker, 5);
+var personQueue = async.queue(queueWorker, 5),
+    relationshipQueue = async.queue(queueWorker, 1);
 
 function queueWorker(data, callback){
   data.save().then(function(){

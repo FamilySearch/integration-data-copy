@@ -52,14 +52,14 @@ Row.prototype.save = function(){
     if(Row.saveSources){
       attachments.push(self.saveSources());
     }
-    return $.when.apply($, attachments);
+    return Promise.all(attachments);
   });
   
   promise.then(function(){
     self.status = 'success';
     self.render();
     self.savedCallbacks.fire();
-  }, function(e){
+  }).catch(function(e){
     self.status = 'danger';
     self.render();
     console.error(e.stack);
@@ -72,8 +72,7 @@ Row.prototype.onSave = function(cb){
 };
 
 Row.prototype.saveNotes = function(){
-  var self = this,
-      deferred = $.Deferred();
+  var self = this;
   return this.data.getNotes().then(function(notesResponse){
     var notePromises = notesResponse.getNotes().map(function(prodNote){
       var sandboxNote = sandboxClient.createNote(prodNote.toJSON());
@@ -85,6 +84,28 @@ Row.prototype.saveNotes = function(){
 };
 
 Row.prototype.saveSources = function(){
-  console.log('saving sources');
-  // this.data.getSources();
+  var self = this;
+  return this.data.getSources().then(function(sourcesResponse){
+    var promise = Promise.resolve();
+    sourcesResponse.getSourceDescriptions().forEach(function(prodSource){
+      var sandboxSource = sandboxClient.createSourceDescription(prodSource.toJSON());
+      sandboxSource.clearId();
+      sandboxSource.data.links = {};
+      promise = promise.then(function(){
+        return self.newData.addSource(sandboxSource);
+      });
+    });
+    return promise;
+  });
+  /*
+  return this.data.getSources().then(function(sourcesResponse){
+    var sourcePromises = sourcesResponse.getSourceDescriptions().map(function(prodSource){
+      var sandboxSource = sandboxClient.createSourceDescription(prodSource.toJSON());
+      sandboxSource.clearId();
+      sandboxSource.data.links = {};
+      return self.newData.addSource(sandboxSource);
+    });
+    return $.when.apply($, sourcePromises);
+  });
+  */
 };
