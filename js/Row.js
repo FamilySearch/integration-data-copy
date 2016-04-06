@@ -27,17 +27,34 @@ Row.prototype.save = function(){
   
   var self = this;
   
-  self.newData = this.copyData();
-  
-  self.newData.clearIds();
+  // Update row status to reflect that save is in progress
   self.status = 'info';
   self.render();
   
-  var promise = self.newData.save();
+  // Copy data
+  var newData = self.newData = this.copyData();
+  
+  // Remove ids because they are ids from production
+  newData.clearIds();
+  
+  // Remove invalid facts. We check for the existence of getFacts()
+  // because it doesn't exist on child and parent relationships; they have
+  // mother facts and father facts.
+  if(newData.getFacts){
+    newData.getFacts().forEach(function(fact){
+      if(!fact.getType()){
+        console.log('removing fact with null type');
+        newData.deleteFact(fact);
+      }
+    });
+  }
+  
+  // Save
+  var promise = newData.save();
   
   // Retrieve the new ID immediately so that notes and sources can use it
   promise.then(function(){
-    self.newId = self.newData.getId();
+    self.newId = newData.getId();
   });
   
   // If we are saving notes or sources then wait for those promises, otherwise
@@ -79,10 +96,14 @@ Row.prototype.saveNotes = function(){
       sandboxNote.clearId();
       return sandboxNote.save(self.newData.getLink('notes').href);
     });
-    return $.when.apply($, notePromises);
+    return Promise.all(notePromises);
   });
 };
 
+/**
+ * We have to process the sources serially to prevent concurrent updates to the
+ * person (soruce refs), otherwise the server will respond with a 409.
+ */
 Row.prototype.saveSources = function(){
   var self = this;
   return this.data.getSources().then(function(sourcesResponse){
@@ -97,15 +118,4 @@ Row.prototype.saveSources = function(){
     });
     return promise;
   });
-  /*
-  return this.data.getSources().then(function(sourcesResponse){
-    var sourcePromises = sourcesResponse.getSourceDescriptions().map(function(prodSource){
-      var sandboxSource = sandboxClient.createSourceDescription(prodSource.toJSON());
-      sandboxSource.clearId();
-      sandboxSource.data.links = {};
-      return self.newData.addSource(sandboxSource);
-    });
-    return $.when.apply($, sourcePromises);
-  });
-  */
 };

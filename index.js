@@ -103,6 +103,7 @@ function processPerson(person){
 
 function processMarriage(wife, husband, marriage){
   if(!wife.isLiving() && !husband.isLiving()){
+    marriage.updateLinks();
     var row = new CoupleRow(marriage);
     $('#couple-table').append(row.$dom);
     cache.couples[marriage.getId()] = row;
@@ -113,6 +114,7 @@ function processChild(child, mother, father, childRelationship){
   if(!child.isLiving() 
       && (!mother || !mother.isLiving()) 
       && (!father || !father.isLiving())){
+    childRelationship.updateLinks();
     var row = new ChildRow(childRelationship);
     $('#child-table').append(row.$dom);
     cache.children[childRelationship.getId()] = row;
@@ -177,6 +179,7 @@ function getFSClient(environment){
   var config = {
       client_id: 'a02j00000098ve6AAA',
       redirect_uri: document.location.origin + '/',
+      // redirect_uri: document.location.origin,
       environment: environment
     }, 
     token = Cookies.get(environment + '-token');
@@ -239,4 +242,32 @@ FamilySearch.ChildAndParents.prototype.clearIds = function(){
   for(var i = 0; i < motherFacts.length; i++){
     motherFacts[i].clearId();
   }
+};
+
+/**
+ * Methods to set the notes and sources links on relationships because the
+ * links don't exist when the relationships are returned by person with relationships
+ * which is what fs-traversal uses.
+ */
+ 
+FamilySearch.Couple.prototype.updateLinks = function(){
+  this.addLinks({
+    notes: {
+      href: this.getCoupleUrl() + '/notes'
+    },
+    'source-descriptions': {
+      href: this.getCoupleUrl() + '/sources'
+    }
+  });
+};
+
+FamilySearch.ChildAndParents.prototype.updateLinks = function(){
+  this.addLinks({
+    notes: {
+      href: this.getChildAndParentsUrl() + '/notes'
+    },
+    'source-descriptions': {
+      href: this.getChildAndParentsUrl() + '/sources'
+    }
+  });
 };
