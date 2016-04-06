@@ -130,6 +130,21 @@
       </div>
       
       <div class="section">
+        <h3>Should we copy sources and notes?</h3>
+        <p class="help-block">This can slow the process down significantly.</p>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" id="copyNotes"> Copy Notes
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" id="copySources"> Copy Sources
+          </label>
+        </div>
+      </div>
+      
+      <div class="section">
         <button id="copy-btn" class="btn btn-primary btn-lg">Copy</button>
       </div>
       
@@ -194,10 +209,14 @@
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.0.5/familysearch-javascript-sdk.min.js"></script>
+    <script src="//cdn.jsdelivr.net/familysearch-javascript-sdk/2.4.4/familysearch-javascript-sdk.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/async/1.4.2/async.min.js"></script>
     <script src="//cdn.jsdelivr.net/fs-traversal/4.0.0/fs-traversal.min.js"></script>
+    <script src="js/Row.js"></script>
+    <script src="js/ChildRow.js"></script>
+    <script src="js/CoupleRow.js"></script>
+    <script src="js/PersonRow.js"></script>
     <script src="index.js"></script>
     
   </body>
