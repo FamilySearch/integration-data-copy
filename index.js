@@ -179,7 +179,6 @@ function getFSClient(environment){
   var config = {
       client_id: 'a02j00000098ve6AAA',
       redirect_uri: document.location.origin + '/',
-      // redirect_uri: document.location.origin,
       environment: environment
     }, 
     token = Cookies.get(environment + '-token');
