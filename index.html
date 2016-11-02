@@ -12,7 +12,7 @@
     <div class="container">
       
       <h1>FamilySearch Sandbox Data Copy</h1>
-      <p>Copy data from the FamilySearch production tree into the sandbox tree. <em>Living persons are not copied.</em></p>
+      <p>Copy data from the FamilySearch production tree into the sandbox (integration) tree. <em>Living persons are not copied.</em></p>
     
       <div id="auth" class="section">
         <h3>Sign In</h3>
@@ -186,7 +186,7 @@
     <script id="person-row" type="text/html">
       <tr class="{{status}}">
         <td><a target="_blank" href="https://familysearch.org/tree/person/{{productionId}}/details">{{productionId}}</a></td>
-        <td><a target="_blank" href="https://sandbox.familysearch.org/tree/person/{{sandboxId}}/details">{{sandboxId}}</a></td>
+        <td><a target="_blank" href="https://integration.familysearch.org/tree/person/{{sandboxId}}/details">{{sandboxId}}</a></td>
         <td>{{name}}</td>
       </tr>
     </script>
@@ -194,7 +194,7 @@
     <script id="couple-row" type="text/html">
       <tr class="{{status}}">
         <td><a target="_blank" href="https://familysearch.org/tree/relationship/{{productionId}}/couple">{{productionId}}</a></td>
-        <td><a target="_blank" href="https://sandbox.familysearch.org/tree/relationship/{{sandboxId}}/couple">{{sandboxId}}</a></td>
+        <td><a target="_blank" href="https://integration.familysearch.org/tree/relationship/{{sandboxId}}/couple">{{sandboxId}}</a></td>
         <td>{{names}}</td>
       </tr>
     </script>
@@ -202,7 +202,7 @@
     <script id="child-row" type="text/html">
       <tr class="{{status}}">
         <td><a target="_blank" href="https://familysearch.org/tree/relationship/{{productionId}}/parent-child">{{productionId}}</a></td>
-        <td><a target="_blank" href="https://sandbox.familysearch.org/tree/relationship/{{sandboxId}}/parent-child">{{sandboxId}}</a></td>
+        <td><a target="_blank" href="https://integration.familysearch.org/tree/relationship/{{sandboxId}}/parent-child">{{sandboxId}}</a></td>
         <td>{{names}}</td>
       </tr>
     </script>
