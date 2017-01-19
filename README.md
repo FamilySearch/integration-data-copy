@@ -1,10 +1,10 @@
-# sandbox-data-copy
-This is a utility that copies data from production into sandbox
+# integration-data-copy
+This is a utility that copies data from production into integration system
 
 Basic instructions on use are:
-* Authenticate to production and sandbox by clicking on each "Sign In" button
+* Authenticate to production and integration by clicking on each "Sign In" button
 * Enter a starting PID from production
-* Select the types of people you want to have copied from production to Sandbox.
+* Select the types of people you want to have copied from production to integration.
 * Specify the number of people to copy
 * Click the "Copy" button
 
