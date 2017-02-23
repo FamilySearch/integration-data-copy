@@ -1,7 +1,9 @@
 # integration-data-copy
-This is a utility that copies data from production into integration system
+
+This is a utility that copies data from production into the integration system. The app is live at [http://familysearch.github.io/integration-data-copy](http://familysearch.github.io/integration-data-copy)
 
 Basic instructions on use are:
+
 * Authenticate to production and integration by clicking on each "Sign In" button
 * Enter a starting PID from production
 * Select the types of people you want to have copied from production to integration.
